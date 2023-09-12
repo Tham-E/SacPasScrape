@@ -145,14 +145,14 @@ tmp<-unique(rbind(DailyDataTable%>%filter(!is.na(`River Discharge Flow 3-day Fre
 write_xlsx(tmp,path=paste0("~/SacPasScrape/SacPasRecords/SacPasDailyDataTable",Sys.Date(),".xlsx"))
 write_xlsx(tmp,path=paste0("~/SacPasScrape/SacPasRecords/SacPasDailyDataTable_LastUpdate",Sys.Date(),".xlsx"))
 # remove extra data tables/elements ----------------------------
-rm(DailyDataTable,DailyDataTable2,latestData,SacPas,table_css,tmp_snapshot,csv_link,link,link_css)
+
 
 file_path<-"~/SacPasScrape/SacPasRecords"
 f<-list.files(file_path,include.dirs = F,full.names = T,recursive = T)
 
 test<-list.files(file_path,include.dirs = F,full.names = T,recursive = T)
 print(f)
-
+rm(DailyDataTable,DailyDataTable2,latestData,SacPas,table_css,tmp_snapshot,csv_link,link,link_css)
 # Develop graphs to show SacPasDailyTable Data ----------------------------
 
 library(ggplot2)
