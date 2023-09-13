@@ -12,7 +12,7 @@ link<-"https://www.cbr.washington.edu/sacramento/workgroups/delta_smelt.html"
 # Work around from directly using rvest::read_html (would produce error 407) ----------------------------
 download.file(link,destfile = "SacPas.html")
 SacPas<-rvest::read_html("SacPas.html")
-unlink("SacPas.html")
+
 
 
 # Isolate and import Table in Sacpas link ----------------------------
@@ -123,11 +123,10 @@ DailyDataTable2<-DailyDataTable%>%filter(is.na(`OMR Index (CFS)`))
 # Adding updated data to new Daily Table Record ----------------------------
 getwd()
 tmp_snapshot<-fileSnapshot("~/SacPasScrape/SacPasRecords")
-test1<-rownames(tmp_snapshot$info[-which.max(tmp_snapshot$info$size),])
-print(test1)
-
-test2<-rownames(tmp_snapshot$info[-which.max(tmp_snapshot$info$ctime),])
-print(test2)
+folder_path<-tmp_snapshot$path
+folder_contents<-tmp_snapshot$info%>%arrange(desc(mtime))
+old_archive<-rownames(folder_contents[-c(1:4),])
+old_archive_path<-paste0(folder_path,"\\",old_archive)
 
 latestData<-read_excel(paste0("~/SacPasScrape/SacPasRecords/",rownames(tmp_snapshot$info[which.max(tmp_snapshot$info$mtime),])))
 latestData$`Water Turbidity 1-day Bethel Island (NTU)`<-as.double(latestData$`Water Turbidity 1-day Bethel Island (NTU)`)
@@ -145,14 +144,13 @@ tmp<-unique(rbind(DailyDataTable%>%filter(!is.na(`River Discharge Flow 3-day Fre
 write_xlsx(tmp,path=paste0("~/SacPasScrape/SacPasRecords/SacPasDailyDataTable",Sys.Date(),".xlsx"))
 write_xlsx(tmp,path=paste0("~/SacPasScrape/SacPasRecords/SacPasDailyDataTable_LastUpdate",Sys.Date(),".xlsx"))
 # remove extra data tables/elements ----------------------------
+unlink("SacPas.html")
+n<-nrow(folder_contents)
+n
+ifelse(n>4,file.remove(old_archive_path),"No files to remove")
 
 
-file_path<-"~/SacPasScrape/SacPasRecords"
-f<-list.files(file_path,include.dirs = F,full.names = T,recursive = T)
-
-test<-list.files(file_path,include.dirs = F,full.names = T,recursive = T)
-print(f)
-rm(DailyDataTable,DailyDataTable2,latestData,SacPas,table_css,tmp_snapshot,csv_link,link,link_css)
+rm(DailyDataTable,DailyDataTable2,latestData,SacPas,table_css,tmp_snapshot,csv_link,link,link_css,folder_contents,folder_path,n,old_archive,old_archive_path)
 # Develop graphs to show SacPasDailyTable Data ----------------------------
 
 library(ggplot2)
