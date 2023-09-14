@@ -123,10 +123,7 @@ DailyDataTable2<-DailyDataTable%>%filter(is.na(`OMR Index (CFS)`))
 # Adding updated data to new Daily Table Record ----------------------------
 getwd()
 tmp_snapshot<-fileSnapshot("~/SacPasScrape/SacPasRecords")
-folder_path<-tmp_snapshot$path
-folder_contents<-tmp_snapshot$info%>%arrange(desc(mtime))
-old_archive<-rownames(folder_contents[-c(1:4),])
-old_archive_path<-paste0(folder_path,"\\",old_archive)
+
 
 latestData<-read_excel(paste0("~/SacPasScrape/SacPasRecords/",rownames(tmp_snapshot$info[which.max(tmp_snapshot$info$mtime),])))
 latestData$`Water Turbidity 1-day Bethel Island (NTU)`<-as.double(latestData$`Water Turbidity 1-day Bethel Island (NTU)`)
@@ -145,8 +142,11 @@ write_xlsx(tmp,path=paste0("~/SacPasScrape/SacPasRecords/SacPasDailyDataTable",S
 write_xlsx(tmp,path=paste0("~/SacPasScrape/SacPasRecords/SacPasDailyDataTable_LastUpdate",Sys.Date(),".xlsx"))
 # remove extra data tables/elements ----------------------------
 unlink("SacPas.html")
+folder_path<-tmp_snapshot$path
+folder_contents<-tmp_snapshot$info%>%arrange(desc(mtime))
+old_archive<-rownames(folder_contents[-c(1:4),])
+old_archive_path<-paste0(folder_path,"\\",old_archive)
 n<-nrow(folder_contents)
-n
 ifelse(n>4,file.remove(old_archive_path),"No files to remove")
 
 
